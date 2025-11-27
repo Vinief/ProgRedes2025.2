@@ -1,34 +1,39 @@
-import socket ,os
+import socket
 
-host = socket.gethostbyname(socket.getfqdn())
+host = '127.0.0.1'
 port = 60000
 
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
-udp_socket.bind((host,port))
 
 msg_recebida = ''
 
-while msg_recebida != '!q':
+while True:
     
-    arquivo = input('digite o nome do arquivo:')
+    arquivo = 'alo.txt'
     
-    print('enviadando msg...')
+    #envia nome do arquivo
     udp_socket.sendto(arquivo.encode('utf-8') , (host,port))
+    print(f'enviei isso {arquivo} por essa porta e ip {port,host}')
     
-    print('recebendo msg...')
+    #recebe retorno do servidor se o arquivo existe
     retorno , src = udp_socket.recvfrom(1)
+    print(f'recebi isso:{retorno.decode} desse ip e porta {src}')
     
     if int.from_bytes(retorno) != 0:
-        
+        #recebe o tamanho do arquivo
         data , src = udp_socket.recvfrom(4)
-        udp_socket.recvfrom(int.from_bytes(data))
-        f = open(arquivo,'wb')
+        print(f'recebi isso:{data} desse ip e porta {src}')
+        
+        #recebe dados do arquivo e escreve
+        data , src = udp_socket.recvfrom(int.from_bytes(data))
+        print(f'recebi isso:{data} desse ip e porta {src}')
+        f = open('OLAH','wb')
         f.write(data)
         f.close()
 
     else:
         print('arquivo n existe')
-
+    break
 udp_socket.close()
 
 
