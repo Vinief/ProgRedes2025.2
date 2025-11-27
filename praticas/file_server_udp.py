@@ -6,29 +6,35 @@ port = 60000
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
 udp_socket.bind((host,port))
 
-msg_recebida = ''
-data = b''
-
-while data.decode('utf-8') != '!q':
-     
-    data , src = udp_socket.recvfrom(1024)
+while True:
     
-    print('recebendo msg...')
+    nome_arquivo , src = udp_socket.recvfrom(10)
+    print(f'recebi isso:{nome_arquivo.decode('utf-8')} desse ip e porta {src}')
     
-    f  = open(data.decode('utf-8'),'rb')
     try:
-        size = os.path.getsize(data.decode('utf-8'))
-             
-        udp_socket.sendto((10).to_bytes(1,'big') , (src[0],port))
-    
-        udp_socket.sendto(size.to_bytes(4 ,'big'), (src[0],port))
-        f.read(size)
+        #abre arquivo
+        f  = open(nome_arquivo.decode('utf-8'),'rb')
+        size = os.path.getsize(nome_arquivo.decode('utf-8'))
+        
+        #byte de aviso
+        udp_socket.sendto((5).to_bytes(1,'big') , src)
+        print(f'enviei isso {(5).to_bytes(1,'big')} por essa porta e ip {src[0],port}')
+        
+        #tamanho do arquivo
+        udp_socket.sendto(size.to_bytes(4 ,'big'), src)
+        print(f'enviei isso {int.from_bytes(size.to_bytes(4,'big'))} por essa porta e ip {src[0],port}')
+        
+        #lendo e enviando o arquivo
+        arquivo = f.read(size)
+        udp_socket.sendto(arquivo , src)
+        print(f'enviei isso {arquivo} por essa porta e ip {src[0],port}')
         f.close()
 
     except FileNotFoundError:
-        udp_socket.sendto((0).to_bytes(1,'big') , (src[0],port))
+        udp_socket.sendto((0).to_bytes(1,'big') , src)
     
     
-    print(src , data.decode('utf-8'))
-    
+    break
+
+print('ola')
 udp_socket.close()
