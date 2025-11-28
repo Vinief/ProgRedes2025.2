@@ -12,7 +12,7 @@ while True:
     print(f'recebi isso:{nome_arquivo.decode('utf-8')} desse ip e porta {src}')
     
     try:
-        #abre arquivo
+        #abre arquivo e pega o tamanho
         f  = open(nome_arquivo.decode('utf-8'),'rb')
         tamanho = os.path.getsize(nome_arquivo.decode('utf-8'))
         
