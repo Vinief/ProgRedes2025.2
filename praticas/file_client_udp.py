@@ -1,6 +1,6 @@
 import socket
 
-host = '127.0.0.1'
+host = '10.25.1.168'
 port = 60000
 
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
@@ -20,11 +20,14 @@ while True:
     print(f'recebi isso:{retorno.decode} desse ip e porta {src}')
     
     if int.from_bytes(retorno) != 0:
+        
         #recebe o tamanho do arquivo
         tamanho , src = udp_socket.recvfrom(4)
         print(f'recebi isso:{tamanho} desse ip e porta {src}')
-        f = open('OLAH','wb')
-        if tamanho <= 4096:
+        f = open('oie.txt','wb')
+        
+        if int.from_bytes(tamanho, byteorder = 'big') <= 4096:
+        
         #recebe dados do arquivo e escreve
             dados , src = udp_socket.recvfrom(int.from_bytes(tamanho))
             print(f'recebi isso:{dados} desse ip e porta {src}')
@@ -47,4 +50,3 @@ while True:
         print('arquivo n existe')
     break
 udp_socket.close()
-
