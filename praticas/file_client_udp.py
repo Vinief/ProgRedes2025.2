@@ -21,20 +21,30 @@ while True:
     
     if int.from_bytes(retorno) != 0:
         #recebe o tamanho do arquivo
-        data , src = udp_socket.recvfrom(4)
-        print(f'recebi isso:{data} desse ip e porta {src}')
-        
-        #recebe dados do arquivo e escreve
-        data , src = udp_socket.recvfrom(int.from_bytes(data))
-        print(f'recebi isso:{data} desse ip e porta {src}')
+        tamanho , src = udp_socket.recvfrom(4)
+        print(f'recebi isso:{tamanho} desse ip e porta {src}')
         f = open('OLAH','wb')
-        f.write(data)
-        f.close()
+        if tamanho <= 4096:
+        #recebe dados do arquivo e escreve
+            dados , src = udp_socket.recvfrom(int.from_bytes(tamanho))
+            print(f'recebi isso:{dados} desse ip e porta {src}')
+            f.write(dados)
+            f.close()
+        else:
+            while tamanho > 0:
+                if tamanho > 4096:
+                    pacote = 4096
+                    arquivo, src = udp_socket.recvfrom(pacote)
+                    f.write(arquivo)
+                    tamanho -= pacote
+                else:
+                    arquivo, src = udp_socket.recvfrom(tamanho)
+                    f.write(arquivo)
+                    tamanho = 0
 
+                print(f'enviei isso {arquivo} por essa porta e ip {src[0],port}')
     else:
         print('arquivo n existe')
     break
 udp_socket.close()
 
-
-print(data.decode('utf-8'))
