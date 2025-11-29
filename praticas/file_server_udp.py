@@ -1,15 +1,23 @@
 import socket, os
 
 host = ''
-port = 60000
+port = 20000
 
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
 udp_socket.bind((host,port))
+print(f'conectado ao host: {host} e a porta: {port}')
 
-while True:
+nome_arquivo_decode = ''
+while nome_arquivo_decode != '!q':
+    print(f'esperando resposta do cliente...')
+    #recebe tam do nome
+    nome_tam , src = udp_socket.recvfrom(1)
+    print(f'recebi isso:{int.from_bytes(nome_tam)} desse ip e porta {src}')
     
-    nome_arquivo , src = udp_socket.recvfrom(10)
-    print(f'recebi isso:{nome_arquivo.decode('utf-8')} desse ip e porta {src}')
+    #recebe nome
+    nome_arquivo , src = udp_socket.recvfrom(int.from_bytes(nome_tam))
+    nome_arquivo_decode = nome_arquivo.decode('utf-8')
+    print(f'recebi isso:{nome_arquivo_decode} desse ip e porta {src}')
     
     try:
         #abre arquivo e pega o tamanho
@@ -17,18 +25,19 @@ while True:
         tamanho = os.path.getsize(nome_arquivo.decode('utf-8'))
         
         #byte de aviso
-        udp_socket.sendto((5).to_bytes(1,'big') , src)
-        print(f'enviei isso {(5).to_bytes(1,'big')} por essa porta e ip {src[0],port}')
+        existe = (1).to_bytes(1,'big') 
+        udp_socket.sendto(existe , src)
+        print(f'enviei isso {int.from_bytes(existe)} por essa porta e ip {src}')
         
         #tamanho do arquivo
         udp_socket.sendto(tamanho.to_bytes(4 ,'big'), src)
-        print(f'enviei isso {int.from_bytes(tamanho.to_bytes(4,'big'))} por essa porta e ip {src[0],port}')
+        print(f'enviei isso {int.from_bytes(tamanho.to_bytes(4,'big'))} por essa porta e ip {src}')
         
         #lendo e enviando o arquivo
         if 4096 >= tamanho: 
             arquivo = f.read(tamanho)
             udp_socket.sendto(arquivo , src)
-            print(f'enviei isso {arquivo} por essa porta e ip {src[0],port}')
+            print(f'enviei isso {arquivo} por essa porta e ip {src}')
             
         else:
             while tamanho > 0:
@@ -41,14 +50,17 @@ while True:
                     arquivo = f.read(tamanho)
                     udp_socket.sendto(arquivo , src)
                     tamanho = 0
-                print(f'enviei isso {arquivo} por essa porta e ip {src[0],port}')
+                print(f'enviei isso {arquivo} por essa porta e ip {src}')
         
         f.close()
     except FileNotFoundError:
-        udp_socket.sendto((0).to_bytes(1,'big') , src)
-    
-    
-    break
+        #caso o arquivo n exista
+        if nome_arquivo_decode != '!q':
+            existe = (0).to_bytes(1,'big')
+            udp_socket.sendto((0).to_bytes(1,'big') , src)
+            print(f'enviei isso {existe} por essa porta e ip {src}')
+        else:print('programa encerrado!!!')
+    except:
+        print('houve algum erro')
 
-print('ola')
 udp_socket.close()
