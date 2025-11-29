@@ -1,52 +1,60 @@
 import socket
 
-host = '10.25.1.168'
-port = 60000
+host = input('digite o nome do host:')
+port = 20000
 
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
 
-msg_recebida = ''
+nome_arquivo = ''
 
-while True:
+while nome_arquivo != '!q':
     
-    arquivo = 'alo.txt'
+    nome_arquivo = input('digite o nome do arquivo:')
+    nome_arquivo_encode = nome_arquivo.encode('utf-8')
+    nome_tam = len(nome_arquivo).to_bytes(1 , byteorder = 'big')
+
+    #envia tam do nome
+    udp_socket.sendto(nome_tam , (host,port))
+    print(f'enviei isso {nome_tam} por essa porta e ip {port,host}')
     
     #envia nome do arquivo
-    udp_socket.sendto(arquivo.encode('utf-8') , (host,port))
-    print(f'enviei isso {arquivo} por essa porta e ip {port,host}')
+    udp_socket.sendto(nome_arquivo_encode , (host,port))
+    print(f'enviei isso {nome_arquivo} por essa porta e ip {port,host}')
     
     #recebe retorno do servidor se o arquivo existe
     retorno , src = udp_socket.recvfrom(1)
-    print(f'recebi isso:{retorno.decode} desse ip e porta {src}')
+    print(f'recebi isso:{int.from_bytes(retorno)} desse ip e porta {src}')
     
     if int.from_bytes(retorno) != 0:
         
         #recebe o tamanho do arquivo
         tamanho , src = udp_socket.recvfrom(4)
         print(f'recebi isso:{tamanho} desse ip e porta {src}')
-        f = open('oie.txt','wb')
+        f = open('AOOLDAODN.txt','wb')
         
         if int.from_bytes(tamanho, byteorder = 'big') <= 4096:
         
         #recebe dados do arquivo e escreve
             dados , src = udp_socket.recvfrom(int.from_bytes(tamanho))
-            print(f'recebi isso:{dados} desse ip e porta {src}')
+            print(f'recebi isso:{dados.decode('utf-8')} desse ip e porta {src}')
             f.write(dados)
             f.close()
         else:
             while tamanho > 0:
                 if tamanho > 4096:
                     pacote = 4096
-                    arquivo, src = udp_socket.recvfrom(pacote)
-                    f.write(arquivo)
+                    dados_arquivo, src = udp_socket.recvfrom(pacote)
+                    f.write(dados_arquivo)
                     tamanho -= pacote
                 else:
-                    arquivo, src = udp_socket.recvfrom(tamanho)
-                    f.write(arquivo)
+                    dados_arquivo, src = udp_socket.recvfrom(tamanho)
+                    f.write(dados_arquivo)
                     tamanho = 0
 
-                print(f'enviei isso {arquivo} por essa porta e ip {src[0],port}')
+                print(f'enviei isso {dados_arquivo} por essa porta e ip {src[0],port}')
     else:
-        print('arquivo n existe')
-    break
+        if nome_arquivo != '!q':
+            print('arquivo n existe')
+        else:print('programa encerrado!!!')
+            
 udp_socket.close()
