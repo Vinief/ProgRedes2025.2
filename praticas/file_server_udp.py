@@ -46,10 +46,12 @@ while nome_arquivo_decode != '!q':
                     arquivo = f.read(pacote)
                     udp_socket.sendto(arquivo , src)
                     tamanho -= pacote
+                    print(f.tell())
                 else:
                     arquivo = f.read(tamanho)
                     udp_socket.sendto(arquivo , src)
                     tamanho = 0
+                    print(f.tell())
                 print(f'enviei isso {arquivo} por essa porta e ip {src}')
         
         f.close()
