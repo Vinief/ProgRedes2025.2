@@ -1,6 +1,6 @@
 import socket
 
-host = input('digite o nome do host:')
+host = '127.0.0.1'
 port = 20000
 
 udp_socket = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
@@ -29,16 +29,16 @@ while nome_arquivo != '!q':
         
         #recebe o tamanho do arquivo
         tamanho , src = udp_socket.recvfrom(4)
+        tamanho = int.from_bytes(tamanho)
         print(f'recebi isso:{tamanho} desse ip e porta {src}')
-        f = open('AOOLDAODN.txt','wb')
+        f = open('AOOLDAODN.jpeg','wb')
         
-        if int.from_bytes(tamanho, byteorder = 'big') <= 4096:
+        if tamanho <= 4096:
         
         #recebe dados do arquivo e escreve
             dados , src = udp_socket.recvfrom(int.from_bytes(tamanho))
             print(f'recebi isso:{dados.decode('utf-8')} desse ip e porta {src}')
             f.write(dados)
-            f.close()
         else:
             while tamanho > 0:
                 if tamanho > 4096:
@@ -46,12 +46,14 @@ while nome_arquivo != '!q':
                     dados_arquivo, src = udp_socket.recvfrom(pacote)
                     f.write(dados_arquivo)
                     tamanho -= pacote
+                    print(f.tell())
                 else:
                     dados_arquivo, src = udp_socket.recvfrom(tamanho)
                     f.write(dados_arquivo)
                     tamanho = 0
-
-                print(f'enviei isso {dados_arquivo} por essa porta e ip {src[0],port}')
+                    print(f.tell())
+                    print(f'enviei isso {dados_arquivo} por essa porta e ip {src}')
+        f.close()
     else:
         if nome_arquivo != '!q':
             print('arquivo n existe')
