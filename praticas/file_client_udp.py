@@ -31,7 +31,7 @@ while nome_arquivo != '!q':
         tamanho , src = udp_socket.recvfrom(4)
         tamanho = int.from_bytes(tamanho)
         print(f'recebi isso:{tamanho} desse ip e porta {src}')
-        f = open('AOOLDAODN.jpeg','wb')
+        f = open(input('como vc deseja salvar o arquivo:'),'wb')
         
         if tamanho <= 4096:
         
