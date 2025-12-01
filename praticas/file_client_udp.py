@@ -10,7 +10,7 @@ nome_arquivo = ''
 while nome_arquivo != '!q':
     
     nome_arquivo = input('digite o nome do arquivo:')
-    nome_arquivo_encode = nome_arquivo.encode('utf-8')
+    nome_arquivo_encode = nome_arquivo.encode("utf-8")
     nome_tam = len(nome_arquivo).to_bytes(1 , byteorder = 'big')
 
     #envia tam do nome
@@ -23,21 +23,21 @@ while nome_arquivo != '!q':
     
     #recebe retorno do servidor se o arquivo existe
     retorno , src = udp_socket.recvfrom(1)
-    print(f'recebi isso:{int.from_bytes(retorno)} desse ip e porta {src}')
+    print(f'recebi isso:{int.from_bytes(retorno,byteorder="big")} desse ip e porta {src}')
     
-    if int.from_bytes(retorno) != 0:
+    if int.from_bytes(retorno,byteorder="big") != 0:
         
         #recebe o tamanho do arquivo
         tamanho , src = udp_socket.recvfrom(4)
-        tamanho = int.from_bytes(tamanho)
+        tamanho = int.from_bytes(tamanho,byteorder="big")
         print(f'recebi isso:{tamanho} desse ip e porta {src}')
-        f = open(input('como vc deseja salvar o arquivo:'),'wb')
+        f = open('oie.jpg','wb')
         
         if tamanho <= 4096:
         
         #recebe dados do arquivo e escreve
-            dados , src = udp_socket.recvfrom(int.from_bytes(tamanho))
-            print(f'recebi isso:{dados.decode('utf-8')} desse ip e porta {src}')
+            dados , src = udp_socket.recvfrom(tamanho)
+            print(f'recebi isso:{dados.decode("utf-8")} desse ip e porta {src}')
             f.write(dados)
         else:
             while tamanho > 0:
@@ -60,3 +60,4 @@ while nome_arquivo != '!q':
         else:print('programa encerrado!!!')
             
 udp_socket.close()
+
