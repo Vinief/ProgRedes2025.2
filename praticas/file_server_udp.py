@@ -40,20 +40,22 @@ while nome_arquivo_decode != '!q':
             print(f'enviei isso {arquivo} por essa porta e ip {src}')
             
         else:
+            pacotes = tamanho//4096
             while tamanho > 0:
                 if tamanho > 4096:
                     pacote = 4096
                     arquivo = f.read(pacote)
                     udp_socket.sendto(arquivo , src)
-                    time.sleep(0.1)
+                    if f.tell()%200 == 0:
+                        time.sleep(0.1)
+                        print(f'voce enviou {f.tell()//4096} pacotes de {pacotes}')
                     tamanho -= pacote
-                    print(f.tell())
                 else:
                     arquivo = f.read(tamanho)
                     udp_socket.sendto(arquivo , src)
                     tamanho = 0
                     print(f.tell())
-                print(f'enviei isso {arquivo} por essa porta e ip {src}')
+                    print(f'enviei isso {arquivo} por essa porta e ip {src}')
         
         f.close()
     except FileNotFoundError:
