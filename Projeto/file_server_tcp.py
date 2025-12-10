@@ -20,25 +20,29 @@ while name_recv_decode != '!q':
     
     if option == 10:#opção de download
     
-    
-        #recebe nome e tam do nome 
-        nome_arquivo = (funcoes.recv(con)).decode('utf-8')
+        try:
+            #recebe nome e tam do nome 
+            nome_arquivo = (funcoes.recv(con)).decode('utf-8')
+            
+            #abre arquivo e pega o tamanho
+            print(nome_arquivo)
+            f  = open(f'../STORAGE_SERVER/{nome_arquivo}','rb')
+            tamanho = (os.path.getsize(f'../STORAGE_SERVER/{nome_arquivo}')).to_bytes(4, "big")
+            
+            #retorna se existe
+            status = (1).to_bytes(1, "big")
+            con.send(status)
+            
+            dado = f.read()
+            funcoes.send(con, tamanho, dado)
+            print('arquivo enviado com sucesso!!!')
+            
+            f.close()
+        except FileNotFoundError:
+            status = (0).to_bytes(1, "big")
+            con.send(status)
+            print('arquivo n exite!!!')
         
-        #abre arquivo e pega o tamanho
-        print(nome_arquivo)
-        f  = open(f'../STORAGE_SERVER/{nome_arquivo}','rb')
-        tamanho = (os.path.getsize(f'../STORAGE_SERVER/{nome_arquivo}')).to_bytes(4, "big")
-        
-        #retorna se existe
-        status = (1).to_bytes(1, "big")
-        con.send(status)
-        
-        dado = f.read()
-        funcoes.send(con, tamanho, dado)
-        print('arquivo enviado com sucesso!!!')
-        
-        f.close()
-    
     if option == 20:#opção de listagem
         
         status = (1).to_bytes(1, "big")
