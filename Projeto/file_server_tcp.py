@@ -7,12 +7,13 @@ tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
 tcp_socket.bind((host,port))
 tcp_socket.listen(1)
 con , cliente = tcp_socket.accept()
+encerrar_prog = False
 
 print(f'conectado ao host: {host} e a porta: {port}')
 
-name_recv_decode = ''
+
 ###################################################################################################################################
-while name_recv_decode != '!q':
+while not encerrar_prog:
     print(f'esperando resposta do cliente...')
     
     option = int.from_bytes(con.recv(1), 'big')
@@ -23,9 +24,9 @@ while name_recv_decode != '!q':
         try:
             #recebe nome e tam do nome 
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
+            print('nome do arquivo recebido com sucesso!!!')
             
             #abre arquivo e pega o tamanho
-            print(nome_arquivo)
             f  = open(f'../STORAGE_SERVER/{nome_arquivo}','rb')
             tamanho = (os.path.getsize(f'../STORAGE_SERVER/{nome_arquivo}')).to_bytes(4, "big")
             
@@ -49,11 +50,9 @@ while name_recv_decode != '!q':
 
         con.send(status)
 
-        tam_json = (funcoes.faz_jason()).to_bytes(4, "big")
-        nome = 'listagem.json'
-        f = open(f'../STORAGE_SERVER/{nome}', "rb")
-        dado = f.read()
-        f.close()
+        info = funcoes.faz_jason()
+        tam_json, dado = (info[0]).to_bytes(4, "big"), info[1].encode('utf-8')
+
 
         funcoes.send(con, tam_json, dado)
         print('arquivo enviado com sucesso!!!')
@@ -61,6 +60,7 @@ while name_recv_decode != '!q':
     if option == 30:#opção de upload
         try:
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
+            print('nome recebido com sucesso!!!')
             f = open(f'../STORAGE_SERVER/{nome_arquivo}', 'wb')
             status = (1).to_bytes(1, "big")
             
@@ -76,5 +76,9 @@ while name_recv_decode != '!q':
             status = (0).to_bytes(1,"big")
             con.send(status)
             print(f'enviei o status do arquivo:{status} por essa porta e ip: {cliente}')
-        
+    if option == 60:
+        print('programa encerrado com sucesso!!!')
+        encerrar_prog = True
+    else:
+        print('essa opcao nao existe!!!')
 ###################################################################################################################################
