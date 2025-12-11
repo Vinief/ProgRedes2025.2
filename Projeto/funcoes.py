@@ -11,7 +11,6 @@ def recv(con):
     if 1024 >= tamanho:
         #recebe arquivo
         arquivo = con.recv(tamanho)
-        print(f'recebi isso:{arquivo} desse ip e porta')
         
     else:
         #recebe arquivo fragmentado
@@ -20,8 +19,8 @@ def recv(con):
             if tamanho > 1024:
                 arquivo += con.recv(1024)
                 pacote_recv += 1024
-                if pacote_recv%100 == 0:
-                    print(f'voce recebeu {((pacote_recv//1024)/pacotes)*100}%')
+                if pacote_recv%200 == 0:
+                    print(f'voce recebeu {int(((pacote_recv//1024)/pacotes)*100)}%')
                
                 tamanho -= 1024
             
@@ -29,8 +28,6 @@ def recv(con):
                 arquivo += con.recv(tamanho)
                 print(f'voce recebeu {pacote_recv//1024} pacotes de {pacotes}')
                 tamanho = 0
-
-                print(f'enviei isso {arquivo} por essa porta e ip')
 
     return arquivo
 ###################################################################################################################################
@@ -44,10 +41,7 @@ def faz_jason():
         json_unformated = {}
 
     conteudo = json.dumps(conteudo)
-    listagem = open('../STORAGE_SERVER/listagem.json' , 'wb')
-    listagem.write(conteudo.encode('utf-8'))
-    listagem.close()
-    return os.path.getsize(f'../STORAGE_SERVER/listagem.json')
+    return [len(conteudo), conteudo]
 ###################################################################################################################################
 def send(con, tamanho, dados):
 #recebe tam do dado
@@ -59,7 +53,6 @@ def send(con, tamanho, dados):
     if 1024 >= tamanho:
         #recebe arquivo
         con.send(dados)
-        print(f'recebi isso:{dados.decode('utf-8')} desse ip e porta')
         
     else:
         #recebe arquivo fragmentado
@@ -70,7 +63,7 @@ def send(con, tamanho, dados):
                 pacote_send += 1024
                 if pacote_send%50 == 0:
                     time.sleep(0.1)
-                    print(f'voce enviou {((pacote_send//1024)/pacotes)*100}% do pacote')
+                    print(f'voce enviou {(((pacote_send//1024)/pacotes)*100)}% do pacote')
                
                 tamanho -= 1024
             
