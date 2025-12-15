@@ -63,7 +63,7 @@ def send(con, tamanho, dados):
                 pacote_send += 1024
                 if pacote_send%50 == 0:
                     time.sleep(0.1)
-                    print(f'voce enviou {(((pacote_send//1024)/pacotes)*100)}% do pacote')
+                    print(f'voce enviou {int((((pacote_send//1024)/pacotes)*100))}% do pacote')
                
                 tamanho -= 1024
             
