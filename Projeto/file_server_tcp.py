@@ -44,7 +44,7 @@ while not encerrar_prog:
             con.send(status)
             print('arquivo n exite!!!')
         
-    if option == 20:#opção de listagem
+    elif option == 20:#opção de listagem
         
         status = (1).to_bytes(1, "big")
 
@@ -57,7 +57,7 @@ while not encerrar_prog:
         funcoes.send(con, tam_json, dado)
         print('arquivo enviado com sucesso!!!')
 
-    if option == 30:#opção de upload
+    elif option == 30:#opção de upload
         try:
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
             print('nome recebido com sucesso!!!')
@@ -76,7 +76,7 @@ while not encerrar_prog:
             status = (0).to_bytes(1,"big")
             con.send(status)
             print(f'enviei o status do arquivo:{status} por essa porta e ip: {cliente}')
-    if option == 60:
+    elif option == 60:
         print('programa encerrado com sucesso!!!')
         encerrar_prog = True
     else:
