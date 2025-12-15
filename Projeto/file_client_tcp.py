@@ -34,7 +34,7 @@ while not encerra_prog:
                 f.close()
 
                 
-        if option == 20:
+        elif option == 20:
             status = int.from_bytes(tcp_socket.recv(1), "big")
         
             if status != 0:
@@ -48,7 +48,7 @@ while not encerra_prog:
             else:
                 print('houve algum erro')
 
-        if option == 30:
+        elif option == 30:
             enviou_tudo = False
             while not enviou_tudo:
                 try:
@@ -75,8 +75,8 @@ while not encerra_prog:
 
                 except FileNotFoundError:
                     print('digite o nome de um arquivo que existe!!!')
-        
-        if option == 60:
+
+        elif option == 60:
             print('programa encerrado com sucesso!!!')
             encerra_prog = True 
         else:
