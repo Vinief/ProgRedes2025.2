@@ -31,7 +31,7 @@ while not encerrar_prog:
             tamanho = (os.path.getsize(f'../STORAGE_SERVER/{nome_arquivo}')).to_bytes(4, "big")
             
             #retorna se existe
-            status = (1).to_bytes(1, "big")
+            status = (0).to_bytes(1, "big")
             con.send(status)
             
             dado = f.read()
@@ -40,14 +40,13 @@ while not encerrar_prog:
             
             f.close()
         except FileNotFoundError:
-            status = (0).to_bytes(1, "big")
+            status = (1).to_bytes(1, "big")
             con.send(status)
             print('arquivo n exite!!!')
         
     elif option == 20:#opção de listagem
         
-        status = (1).to_bytes(1, "big")
-
+        status = (0).to_bytes(1, "big")
         con.send(status)
 
         info = funcoes.faz_jason()
@@ -62,8 +61,8 @@ while not encerrar_prog:
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
             print('nome recebido com sucesso!!!')
             f = open(f'../STORAGE_SERVER/{nome_arquivo}', 'wb')
-            status = (1).to_bytes(1, "big")
             
+            status = (0).to_bytes(1, "big")     
             con.send(status)
 
             dado = funcoes.recv(con)
@@ -73,12 +72,14 @@ while not encerrar_prog:
             f.close()
         except FileExistsError:
             #caso o arquivo n exista status
-            status = (0).to_bytes(1,"big")
+            status = (1).to_bytes(1,"big")
             con.send(status)
             print(f'enviei o status do arquivo:{status} por essa porta e ip: {cliente}')
+    
     elif option == 60:
         print('programa encerrado com sucesso!!!')
         encerrar_prog = True
+    
     else:
         print('essa opcao nao existe!!!')
 ###################################################################################################################################

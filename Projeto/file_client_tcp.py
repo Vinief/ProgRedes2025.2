@@ -23,7 +23,7 @@ while not encerra_prog:
 
             status = int.from_bytes(tcp_socket.recv(1), "big")
             
-            if status != 0:
+            if status == 0:
                 f = open(f"../STORAGE_CLIENT/{nome_arquivo}" ,'wb')
 
                 dados = funcoes.recv(tcp_socket)
@@ -37,7 +37,7 @@ while not encerra_prog:
         elif option == 20:
             status = int.from_bytes(tcp_socket.recv(1), "big")
         
-            if status != 0:
+            if status == 0:
                 
                 dados = funcoes.recv(tcp_socket)
                 print('arquivo recebido com sucesso!!!')
@@ -62,7 +62,7 @@ while not encerra_prog:
 
                     status = int.from_bytes(tcp_socket.recv(1), "big")
 
-                    if status == 1:
+                    if status == 0:
                         
                         tamanho = os.path.getsize(f'../STORAGE_CLIENT/{nome_arquivo}').to_bytes(4, "big")
                         dado = f.read()
