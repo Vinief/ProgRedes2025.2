@@ -1,12 +1,27 @@
-import socket,funcoes,os
+import socket,funcoes,os,sys
 
-host = '127.0.0.1'
-port = 20000
+encerra_prog = True
+parametros = sys.argv
 
-tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-tcp_socket.connect((host, port))
-encerra_prog = False
-
+if len(parametros) == 3:
+    
+    host = parametros[1]
+    port = parametros[2]
+    tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+    
+    try:
+    
+        tcp_socket.connect((host, int(port)))
+        encerra_prog = False
+    
+    except socket.gaierror:
+        print('não foi possivel resolver o endereço!!!')
+    except ValueError:
+        print('a porta tem que ser um numero inteiro!!!')
+    except:
+        print('houve algum erro!!!')
+else:
+    print('os parametros n foram passados')
 
 while not encerra_prog:
     try:

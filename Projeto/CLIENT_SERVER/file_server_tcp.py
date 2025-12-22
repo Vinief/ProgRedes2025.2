@@ -1,8 +1,7 @@
-import socket, os, funcoes
+import socket, os,funcoes
 
 host = ''
 port = 20000
-
 tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
 tcp_socket.bind((host,port))
 tcp_socket.listen(1)
@@ -15,8 +14,17 @@ print(f'conectado ao host: {host} e a porta: {port}')
 ###################################################################################################################################
 while not encerrar_prog:
     print(f'esperando resposta do cliente...')
-    
-    option = int.from_bytes(con.recv(1), 'big')
+    try:
+        option = int.from_bytes(con.recv(1), 'big')
+    except ValueError:
+        print("usuario n enviou numero inteiro")
+        status = (0).to_bytes('1',"big")
+        con.send(status)
+    except:
+        print("houve algum error")
+        status = (0).to_bytes('1',"big")
+        con.send(status)
+
     print(f'recebi a opção selecionada:{option} desse host e porta:{cliente}')
     
     if option == 10:#opção de download
