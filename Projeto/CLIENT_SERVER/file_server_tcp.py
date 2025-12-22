@@ -16,6 +16,7 @@ while not encerrar_prog:
     print(f'esperando resposta do cliente...')
     try:
         option = int.from_bytes(con.recv(1), 'big')
+        print(f'recebi a opção selecionada:{option} desse host e porta:{cliente}')
     except ValueError:
         print("usuario n enviou numero inteiro")
         status = (0).to_bytes('1',"big")
@@ -24,8 +25,6 @@ while not encerrar_prog:
         print("houve algum error")
         status = (0).to_bytes('1',"big")
         con.send(status)
-
-    print(f'recebi a opção selecionada:{option} desse host e porta:{cliente}')
     
     if option == 10:#opção de download
     
