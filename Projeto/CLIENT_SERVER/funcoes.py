@@ -77,3 +77,13 @@ def le_json(arquivo):
     json_formatado = json.loads(arquivo)    
     for a in json_formatado:
         print(f'nome: {a['nome']} tamanho: {a['tamanho']}')
+
+#valida caminho
+def valida_caminho(raiz, path):
+    caminho_real = os.path.realpath(raiz + path)
+    raiz = os.path.realpath(raiz)
+    
+    if (caminho_real).startswith(raiz):
+        return True
+    else:
+        return False 

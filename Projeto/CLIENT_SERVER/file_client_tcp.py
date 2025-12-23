@@ -2,6 +2,7 @@ import socket,funcoes,os,sys
 
 encerra_prog = True
 parametros = sys.argv
+RAIZ = "../STORAGE_CLIENT/"
 
 if len(parametros) == 3:
     
@@ -39,7 +40,7 @@ while not encerra_prog:
             status = int.from_bytes(tcp_socket.recv(1), "big")
             
             if status == 0:
-                f = open(f"../STORAGE_CLIENT/{nome_arquivo}" ,'wb')
+                f = open(f"{RAIZ}{nome_arquivo}" ,'wb')
 
                 dados = funcoes.recv(tcp_socket)
                 print('arquivo recebido com sucesso!!!')
@@ -68,18 +69,21 @@ while not encerra_prog:
             while not enviou_tudo:
                 try:
                     nome_arquivo = input('digite o nome do arquivo que voce deseja upar:')
-                    f = open(f'../STORAGE_CLIENT/{nome_arquivo}', 'rb')
-                    nome_arquivo_encode = nome_arquivo.encode('utf-8')
-                    nome_tam = len(nome_arquivo).to_bytes(4, "big")
+                    if funcoes.valida_caminho(RAIZ, nome_arquivo):
+                        f = open(f'{RAIZ}{nome_arquivo}', 'rb')
+                        nome_arquivo_encode = nome_arquivo.encode('utf-8')
+                        nome_tam = len(nome_arquivo).to_bytes(4, "big")
 
-                    funcoes.send(tcp_socket, nome_tam, nome_arquivo_encode)
-                    print('nome do arquivo enviado com sucesso')
+                        funcoes.send(tcp_socket, nome_tam, nome_arquivo_encode)
+                        print('nome do arquivo enviado com sucesso')
 
-                    status = int.from_bytes(tcp_socket.recv(1), "big")
+                        status = int.from_bytes(tcp_socket.recv(1), "big")
+                    else:
+                        print('camino inacessivel!!!')
 
                     if status == 0:
                         
-                        tamanho = os.path.getsize(f'../STORAGE_CLIENT/{nome_arquivo}').to_bytes(4, "big")
+                        tamanho = os.path.getsize(f'{RAIZ}{nome_arquivo}').to_bytes(4, "big")
                         dado = f.read()
 
                         funcoes.send(tcp_socket, tamanho, dado)

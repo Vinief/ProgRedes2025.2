@@ -7,7 +7,7 @@ tcp_socket.bind((host,port))
 tcp_socket.listen(1)
 con , cliente = tcp_socket.accept()
 encerrar_prog = False
-
+RAIZ = '../STORAGE_SERVER/'
 print(f'conectado ao host: {host} e a porta: {port}')
 
 
@@ -34,18 +34,24 @@ while not encerrar_prog:
             print('nome do arquivo recebido com sucesso!!!')
             
             #abre arquivo e pega o tamanho
-            f  = open(f'../STORAGE_SERVER/{nome_arquivo}','rb')
-            tamanho = (os.path.getsize(f'../STORAGE_SERVER/{nome_arquivo}')).to_bytes(4, "big")
-            
-            #retorna se existe
-            status = (0).to_bytes(1, "big")
-            con.send(status)
-            
-            dado = f.read()
-            funcoes.send(con, tamanho, dado)
-            print('arquivo enviado com sucesso!!!')
-            
-            f.close()
+            if funcoes.valida_caminho(RAIZ,nome_arquivo):
+                f  = open(f'{RAIZ}{nome_arquivo}','rb')
+                tamanho = (os.path.getsize(f'{RAIZ}{nome_arquivo}')).to_bytes(4, "big")
+                
+                #retorna se existe
+                status = (0).to_bytes(1, "big")
+                con.send(status)
+                
+                dado = f.read()
+                funcoes.send(con, tamanho, dado)
+                print('arquivo enviado com sucesso!!!')
+                
+                f.close()
+            else:
+                status = (1).to_bytes(1, "big")
+                con.send(status)
+                print('caminho fora do escopo!!!')
+
         except FileNotFoundError:
             status = (1).to_bytes(1, "big")
             con.send(status)
@@ -67,7 +73,7 @@ while not encerrar_prog:
         try:
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
             print('nome recebido com sucesso!!!')
-            f = open(f'../STORAGE_SERVER/{nome_arquivo}', 'wb')
+            f = open(f'{RAIZ}{nome_arquivo}', 'wb')
             
             status = (0).to_bytes(1, "big")     
             con.send(status)
