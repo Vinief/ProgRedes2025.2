@@ -6,13 +6,13 @@ RAIZ = "../STORAGE_CLIENT/"
 
 if len(parametros) == 3:
     
-    host = parametros[1]
-    port = parametros[2]
+    HOST = parametros[1]
+    PORT = parametros[2]
     tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
     
     try:
     
-        tcp_socket.connect((host, int(port)))
+        tcp_socket.connect((HOST, int(PORT)))
         encerra_prog = False
     
     except socket.gaierror:
@@ -26,7 +26,13 @@ else:
 
 while not encerra_prog:
     try:
-        option = int(input('digite a opção:'))
+        option = int(input('10 baixa arquivos\n' \
+        '20 lista de arquivo\n' \
+        '30 upload de arquivos\n' \
+        '40 baixa de um lugar especifico\n' \
+        '50 baixa por prefixo ou sufixo\n' \
+        '60 encerrar programa\n' \
+        'digite a opção:'))
         tcp_socket.send(option.to_bytes(1, "big"))
     
         if option == 10:

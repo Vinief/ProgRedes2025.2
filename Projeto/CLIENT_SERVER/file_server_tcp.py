@@ -1,15 +1,22 @@
-import socket, os,funcoes
+import socket, os, funcoes, sys
 
-host = ''
-port = 20000
-tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-tcp_socket.bind((host,port))
-tcp_socket.listen(1)
-con , cliente = tcp_socket.accept()
-encerrar_prog = False
+HOST = ''
+parametros = sys.argv
+encerrar_prog = True
+PORT = ''
 RAIZ = '../STORAGE_SERVER/'
-print(f'conectado ao host: {host} e a porta: {port}')
 
+if len(parametros) == 2:
+    try:
+        PORT = int(parametros[1])
+        tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+        tcp_socket.bind((HOST,PORT))
+        tcp_socket.listen(1)
+        print(f'conectado ao host: {HOST} e a porta: {PORT}')
+        con , cliente = tcp_socket.accept()
+        encerrar_prog = False
+    except ValueError:
+        print('a porta precisa ser um numero inteiro!!!')
 
 ###################################################################################################################################
 while not encerrar_prog:
