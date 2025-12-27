@@ -1,4 +1,4 @@
-import socket, os, funcoes, sys
+import socket, os, funcoes, sys, hashlib
 
 HOST = ''
 parametros = sys.argv
@@ -26,13 +26,13 @@ while not encerrar_prog:
         print(f'recebi a opção selecionada:{option} desse host e porta:{cliente}')
     except ValueError:
         print("usuario n enviou numero inteiro")
-        status = (0).to_bytes('1',"big")
+        status = (0).to_bytes(1,"big")
         con.send(status)
     except:
         print("houve algum error")
-        status = (0).to_bytes('1',"big")
+        status = (0).to_bytes(1,"big")
         con.send(status)
-    
+###################################################################################################################################
     if option == 10:#opção de download
     
         try:
@@ -63,7 +63,7 @@ while not encerrar_prog:
             status = (1).to_bytes(1, "big")
             con.send(status)
             print('arquivo n exite!!!')
-        
+###################################################################################################################################
     elif option == 20:#opção de listagem
         
         status = (0).to_bytes(1, "big")
@@ -75,7 +75,7 @@ while not encerrar_prog:
 
         funcoes.send(con, tam_json, dado)
         print('arquivo enviado com sucesso!!!')
-
+###################################################################################################################################
     elif option == 30:#opção de upload
         try:
             nome_arquivo = (funcoes.recv(con)).decode('utf-8')
@@ -95,11 +95,55 @@ while not encerrar_prog:
             status = (1).to_bytes(1,"big")
             con.send(status)
             print(f'enviei o status do arquivo:{status} por essa porta e ip: {cliente}')
-    
+###################################################################################################################################
+    elif option == 40:
+        nome_arquivo = (funcoes.recv(con)).decode('utf-8')
+        try:
+            if funcoes.valida_caminho(RAIZ,nome_arquivo):
+                f = open(f'{RAIZ}{nome_arquivo}', 'rb')
+                inicia = int.from_bytes(con.recv(4), "big")
+                
+                hash_recv_MD5 = int.from_bytes(con.recv(16))
+                hash_MD5 = int(hashlib.md5(f.read(inicia)).hexdigest(), 16)
+
+                print(hash_MD5, hash_recv_MD5)
+
+                tamanho = (os.path.getsize(f'{RAIZ}{nome_arquivo}') - inicia)
+                tamanho_bytes = tamanho.to_bytes(4, "big")
+                dado = f.read(tamanho)
+
+                status = (0).to_bytes(1, "big")
+                con.send(status)
+                if hash_MD5 == hash_recv_MD5:
+                    funcoes.send(con, tamanho_bytes, dado)
+
+                else:
+                    status = (20).to_bytes(1, "big")
+                    con.send(status)
+                    print('o hash dos arquivos nao bate!!!')
+            
+            else:
+                status = (1).to_bytes(1, "big")
+                con.send(status)
+                print('caminho fora do escopo!!!')
+        
+        except ValueError:
+            status = (1).to_bytes(1, "big")
+            con.send(status)
+            print('o byte onde o arquivo inicia deve ser um inteiro!!!')
+        except FileNotFoundError:
+            status = (0).to_bytes(1, "big")
+            con.send(status)
+            status = (10).to_bytes(1, "big")
+            con.send(status)
+            print('arquivo n existe!!!')
+###################################################################################################################################
     elif option == 60:
         print('programa encerrado com sucesso!!!')
         encerrar_prog = True
     
     else:
+        status = (0).to_bytes('1',"big")
+        con.send(status)
         print('essa opcao nao existe!!!')
 ###################################################################################################################################
