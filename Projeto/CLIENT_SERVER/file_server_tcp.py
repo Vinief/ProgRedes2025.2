@@ -5,6 +5,7 @@ parametros = sys.argv
 encerrar_prog = True
 PORT = ''
 RAIZ = '../STORAGE_SERVER/'
+TIMEOUT = 300
 
 if len(parametros) == 2:
     try:
@@ -110,11 +111,16 @@ while not encerrar_prog:
 
                 tamanho = (os.path.getsize(f'{RAIZ}{nome_arquivo}') - inicia)
                 tamanho_bytes = tamanho.to_bytes(4, "big")
+                
+                f.seek(inicia)
                 dado = f.read(tamanho)
-
+                print(dado)
+                
                 status = (0).to_bytes(1, "big")
                 con.send(status)
                 if hash_MD5 == hash_recv_MD5:
+                    status = (0).to_bytes(1, "big")
+                    con.send(status)
                     funcoes.send(con, tamanho_bytes, dado)
 
                 else:

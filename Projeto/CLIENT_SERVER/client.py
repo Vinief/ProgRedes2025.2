@@ -1,29 +1,22 @@
 import socket, funcoes, os, sys, hashlib
 
-encerra_prog = True
+encerra_prog = False
 parametros = sys.argv
 RAIZ = "../STORAGE_CLIENT/"
 TIMEOUT = 300
+ENDIANESS = 'big'
 
 if len(parametros) == 3:
-    
-    HOST = parametros[1]
-    PORT = parametros[2]
-    tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-    
     try:
-    
-        tcp_socket.connect((HOST, int(PORT)))
-        tcp_socket.settimeout(TIMEOUT)
-        encerra_prog = False
-    
-    except socket.gaierror:
-        print('não foi possivel resolver o endereço!!!')
+        HOST_PORT = (parametros[1],int(parametros[2]))
+        tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
     except ValueError:
-        print('a porta tem que ser um numero inteiro!!!')
-   
+        print('a porta deve se um numero inteiro!!')
+        encerra_prog = True
+
 else:
-    print('os parametros n foram passados')
+    print('os parametros n foram corretamente')
+    encerra_prog = True
 
 while not encerra_prog:
     try:
@@ -35,8 +28,20 @@ while not encerra_prog:
         '60 encerrar programa\n' \
         'a conexão sera encerrada se ' \
         'digite a opção:'))
-        tcp_socket.send(option.to_bytes(1, "big"))
-    ###################################################################################################################################
+
+        option_byte = option.to_bytes(1, ENDIANESS)
+        try:
+            print(HOST_PORT)
+            tcp_socket.connect(HOST_PORT)
+            tcp_socket.settimeout(TIMEOUT)
+            tcp_socket.send(option_byte)
+
+        except socket.gaierror:
+            print('não foi possivel resolver o endereço!!!')
+        
+        except ValueError:
+            print('a porta tem que ser um numero inteiro!!!')
+        ###################################################################################################################################
         if option == 10:
             nome_arquivo = input('digite o nome do arquivo:')    
             funcoes.limpar()
@@ -57,8 +62,11 @@ while not encerra_prog:
 
                 f.write(dados)
                 f.close()
+                tcp_socket.close()
+            
             else:
                 print('houve algum problema!!!')
+                tcp_socket.close()
 
     ###################################################################################################################################
         elif option == 20:
@@ -72,9 +80,11 @@ while not encerra_prog:
 
                 json = dados.decode('utf-8')
                 funcoes.le_json(json)
-
+                tcp_socket.close()
             else:
                 print('houve algum erro')
+                tcp_socket.close()
+
     ###################################################################################################################################
         elif option == 30:
             enviou_tudo = False
@@ -93,6 +103,7 @@ while not encerra_prog:
                         status = int.from_bytes(tcp_socket.recv(1), "big")
                     else:
                         print('camino inacessivel!!!')
+                        tcp_socket.close()
 
                     if status == 0:
                         
@@ -102,10 +113,12 @@ while not encerra_prog:
                         funcoes.send(tcp_socket, tamanho, dado)
                         print('arquivo enviado com sucesso!!!')
                         f.close()
+                        tcp_socket.close()
 
                         enviou_tudo = True
                     else:
                         print('houve algum erro!!!')
+                        tcp_socket.close()
 
                 except FileNotFoundError:
                     print('digite o nome de um arquivo que existe!!!')
@@ -115,7 +128,7 @@ while not encerra_prog:
             nome_arquivo = None
             while not enviou_tudo:
                 try:
-                    if nome_arquivo == None and:
+                    if nome_arquivo == None:
                         nome_arquivo = input('digite o nome do arquivo:')
                     
                         f = open(f'{RAIZ}{nome_arquivo}', 'rb')
@@ -137,22 +150,26 @@ while not encerra_prog:
                             
                             if status == 0: 
                                 dado = funcoes.recv(tcp_socket)
-                                print(dado)
                                 f = open(f'{RAIZ}{nome_arquivo}', 'ab')
                                 f.seek(inicia)
                                 f.write(dado)
+                                f.close()
+                                tcp_socket.close()
                                 enviou_tudo = True
                             
                             if status == 10:
                                 print('houve alugum erro')
+                                tcp_socket.close()
                                 enviou_tudo = True
                             
                             if status == 20:
                                 print('o hash não bate!!!')
+                                tcp_socket.close()
                                 enviou_tudo = True
                         
                         else:
                             print('houve algum erro')
+                            tcp_socket.close()
                             enviou_tudo = True
                     else:
                         inicia = int(input('digite de onde voce quer começar o download:'))
@@ -168,24 +185,31 @@ while not encerra_prog:
                         f = open(f'{RAIZ}{nome_arquivo}', 'ab')
                         f.seek(inicia)
                         f.write(dado)
+                        f.close()
+                        
+                        tcp_socket.close()
+                        enviou_tudo = True
+
                 
                 except ValueError:
                     print('o onde inicia o donwload deve ser um inteiro!!!')
                 except FileNotFoundError:
+                    nome_arquivo = None
                     print('o digite o nome de um arquivo que existe!!!')
 
 
         elif option == 60:
             print('programa encerrado com sucesso!!!')
+            tcp_socket.close()
             encerra_prog = True 
         else:
+            tcp_socket.close()
             print('essa opcao nao existe!!!')
         
-        
     except ValueError:
+        tcp_socket.close()
         print('digite um numero inteiro!!!')
     except socket.timeout:
+        tcp_socket.close()
         print('a conexao foi encerrada pela inatividade!!!')
-
-
-tcp_socket.close()
+    

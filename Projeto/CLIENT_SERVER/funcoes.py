@@ -1,4 +1,4 @@
-import os, time, json
+import os, time, json, socket
 
 ###################################################################################################################################
 #tem coisa pra arrumar aqui preste atenção seu miseravel
@@ -79,3 +79,19 @@ def valida_caminho(raiz, path):
 
 def limpar(): 
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def trata_server(tcp_socket,HOST_PORT,TIMEOUT,option):
+    try:
+
+        tcp_socket.connect(HOST_PORT)
+        tcp_socket.settimeout(TIMEOUT)
+        tcp_socket.send(option)
+        return False
+
+    except socket.gaierror:
+        print('não foi possivel resolver o endereço!!!')
+        return True
+    
+    except ValueError:
+        print('a porta tem que ser um numero inteiro!!!')
+        return True
