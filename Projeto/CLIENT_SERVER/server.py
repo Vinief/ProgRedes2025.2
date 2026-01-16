@@ -4,13 +4,13 @@ HOST = ''
 parametros = sys.argv
 PORT = ''
 RAIZ = '../STORAGE_SERVER/'
-TIMEOUT = 300
 ENDIANESS = 'big'
 
 if len(parametros) == 2:
     try:
         PORT = int(parametros[1])
         tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+        tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         tcp_socket.bind((HOST,PORT))
         tcp_socket.listen(1)
         encerrar_prog = False

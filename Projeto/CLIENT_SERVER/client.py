@@ -3,7 +3,7 @@ import socket, funcoes, os, sys, hashlib
 encerra_prog = False
 parametros = sys.argv
 RAIZ = "../STORAGE_CLIENT/"
-TIMEOUT = 300
+TIMEOUT = 1
 ENDIANESS = 'big'
 
 if len(parametros) == 3:
@@ -212,4 +212,6 @@ while not encerra_prog:
     except socket.timeout:
         tcp_socket.close()
         print('a conexao foi encerrada pela inatividade!!!')
+    except OSError:
+        print('espere um momento!')
     
