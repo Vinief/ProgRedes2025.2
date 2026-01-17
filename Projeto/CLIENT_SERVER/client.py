@@ -16,10 +16,10 @@ else:
     print('os parametros n foram corretamente')
     encerra_prog = True
 
-def trata_client (tcp_socket, option):
+def trata_client (tcp_socket, option, encerra_prog):
     while not encerra_prog:
+        print(f'{option}')
         try:
-            
             ###################################################################################################################################
             if option == 10:
                 nome_arquivo = input('digite o nome do arquivo:')    
@@ -42,10 +42,12 @@ def trata_client (tcp_socket, option):
                     f.write(dados)
                     f.close()
                     tcp_socket.close()
+                    encerra_prog = True
                 
                 else:
                     print('houve algum problema!!!')
                     tcp_socket.close()
+                    encerra_prog = True
 
         ###################################################################################################################################
             elif option == 20:
@@ -60,9 +62,11 @@ def trata_client (tcp_socket, option):
                     json = dados.decode('utf-8')
                     funcoes.le_json(json)
                     tcp_socket.close()
+                    encerra_prog = True
                 else:
                     print('houve algum erro')
                     tcp_socket.close()
+                    encerra_prog = True
 
         ###################################################################################################################################
             elif option == 30:
@@ -83,6 +87,7 @@ def trata_client (tcp_socket, option):
                         else:
                             print('camino inacessivel!!!')
                             tcp_socket.close()
+                            encerra_prog = True
 
                         if status == 0:
                             
@@ -93,11 +98,13 @@ def trata_client (tcp_socket, option):
                             print('arquivo enviado com sucesso!!!')
                             f.close()
                             tcp_socket.close()
-
+                            
+                            encerra_prog = True
                             enviou_tudo = True
                         else:
                             print('houve algum erro!!!')
                             tcp_socket.close()
+                            encerra_prog = True
 
                     except FileNotFoundError:
                         print('digite o nome de um arquivo que existe!!!')
@@ -134,21 +141,26 @@ def trata_client (tcp_socket, option):
                                     f.write(dado)
                                     f.close()
                                     tcp_socket.close()
+                                    encerra_prog = True
+                                    
                                     enviou_tudo = True
                                 
                                 if status == 10:
                                     print('houve alugum erro')
                                     tcp_socket.close()
+                                    encerra_prog = True
                                     enviou_tudo = True
                                 
                                 if status == 20:
                                     print('o hash não bate!!!')
                                     tcp_socket.close()
+                                    encerra_prog = True
                                     enviou_tudo = True
                             
                             else:
                                 print('houve algum erro')
                                 tcp_socket.close()
+                                encerra_prog = True
                                 enviou_tudo = True
                         else:
                             inicia = int(input('digite de onde voce quer começar o download:'))
@@ -167,6 +179,7 @@ def trata_client (tcp_socket, option):
                             f.close()
                             
                             tcp_socket.close()
+                            encerra_prog = True
                             enviou_tudo = True
 
                     
@@ -184,12 +197,15 @@ def trata_client (tcp_socket, option):
             else:
                 tcp_socket.close()
                 print('essa opcao nao existe!!!')
+                encerra_prog = True
             
         except ValueError:
             tcp_socket.close()
             print('digite um numero inteiro!!!')
+            encerra_prog = True
         except socket.timeout:
             tcp_socket.close()
+            encerra_prog = True
             print('a conexao foi encerrada pela inatividade!!!')
 
 while True:
@@ -203,17 +219,11 @@ while True:
         'digite a opção:'))
 
     option_byte = option.to_bytes(1, ENDIANESS)
-    try:
-        tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-        tcp_socket.settimeout(15)
-        tcp_socket.connect(HOST_PORT)
-        tcp_socket.send(option_byte)
-
-        threading.Thread(target=trata_client, args=(tcp_socket, option))
-
-
-    except socket.gaierror:
-        print('não foi possivel resolver o endereço!!!')
     
-    except ValueError:
-        print('a porta tem que ser um numero inteiro!!!')
+    tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+    tcp_socket.settimeout(60)
+    tcp_socket.connect(HOST_PORT)
+    tcp_socket.send(option_byte)
+
+    trata_client(tcp_socket, option, encerra_prog)
+

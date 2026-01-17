@@ -138,8 +138,8 @@ def server (con,src):
                 encerrar_prog = True
             
             elif option == 0:
-                encerrar_prog = True
                 con.close()
+                encerrar_prog = True
         
             else:
                 status = (0).to_bytes(1, ENDIANESS)
