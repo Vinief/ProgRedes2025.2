@@ -4,6 +4,7 @@ encerra_prog = False
 parametros = sys.argv
 RAIZ = "../STORAGE_CLIENT/"
 ENDIANESS = 'big'
+continua = True
 
 if len(parametros) == 3:
     try:
@@ -18,12 +19,11 @@ else:
 
 def trata_client (tcp_socket, option, encerra_prog):
     while not encerra_prog:
-        print(f'{option}')
         try:
             ###################################################################################################################################
             if option == 10:
                 nome_arquivo = input('digite o nome do arquivo:')    
-                #funcoes.limpar()
+                funcoes.limpar()
                 nome_arquivo_encode = nome_arquivo.encode('utf-8')
                 nome_tam = len(nome_arquivo).to_bytes(4 , byteorder = 'big')
                 
@@ -51,7 +51,7 @@ def trata_client (tcp_socket, option, encerra_prog):
 
         ###################################################################################################################################
             elif option == 20:
-                #funcoes.limpar()
+                funcoes.limpar()
                 status = int.from_bytes(tcp_socket.recv(1), "big")
             
                 if status == 0:
@@ -74,7 +74,7 @@ def trata_client (tcp_socket, option, encerra_prog):
                 while not enviou_tudo:
                     try:
                         nome_arquivo = input('digite o nome do arquivo que voce deseja upar:')
-                        #funcoes.limpar()
+                        funcoes.limpar()
                         if funcoes.valida_caminho(RAIZ, nome_arquivo):
                             f = open(f'{RAIZ}{nome_arquivo}', 'rb')
                             nome_arquivo_encode = nome_arquivo.encode('utf-8')
@@ -208,22 +208,30 @@ def trata_client (tcp_socket, option, encerra_prog):
             encerra_prog = True
             print('a conexao foi encerrada pela inatividade!!!')
 
-while True:
-    option = int(input('10 baixa arquivos\n' \
-        '20 lista de arquivo\n' \
-        '30 upload de arquivos\n' \
-        '40 baixa parte de um arquivo\n' \
-        '50 baixa por prefixo ou sufixo\n' \
-        '60 encerrar programa\n' \
-        'a conexão sera encerrada se ' \
-        'digite a opção:'))
 
-    option_byte = option.to_bytes(1, ENDIANESS)
-    
-    tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-    tcp_socket.settimeout(60)
-    tcp_socket.connect(HOST_PORT)
-    tcp_socket.send(option_byte)
+while continua:
+    try:
+        option = int(input('10 baixa arquivos\n' \
+            '20 lista de arquivo\n' \
+            '30 upload de arquivos\n' \
+            '40 baixa parte de um arquivo\n' \
+            '50 baixa por prefixo ou sufixo\n' \
+            '60 encerrar programa\n' \
+            'a conexão sera encerrada se ' \
+            'digite a opção:'))
 
-    trata_client(tcp_socket, option, encerra_prog)
+        option_byte = option.to_bytes(1, ENDIANESS)
+        
+        tcp_socket = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+        tcp_socket.settimeout(60)
+        tcp_socket.connect(HOST_PORT)
+        tcp_socket.send(option_byte)
+        trata_client(tcp_socket, option, encerra_prog)
+        
+        if option == 60:
+            continua = False
+    except ValueError:
+        print('digite um valor inteiro!!!')
+    except socket.gaierror:
+        print('nao foi possivel resolver o endereco!!!')
 

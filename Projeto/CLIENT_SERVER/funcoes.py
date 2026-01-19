@@ -95,3 +95,16 @@ def trata_server(tcp_socket,HOST_PORT,TIMEOUT,option):
     except ValueError:
         print('a porta tem que ser um numero inteiro!!!')
         return True
+
+def trata_sufixo(palavra):
+    nova_palavra = palavra
+    if '*' in palavra:
+        partes = palavra.split('*')
+        if (palavra).startswith(''):
+            for a in range(0,len(palavra)):
+                if a == 
+
+
+    
+    else:
+        return False

@@ -4,6 +4,7 @@ parametros = sys.argv
 HOST = ''
 RAIZ = '../STORAGE_SERVER/'
 ENDIANESS = 'big'
+TIMEOUT = 10
 
 if len(parametros) == 2:
     try:
@@ -131,7 +132,11 @@ def server (con,src):
                     con.send(status)
                     status = (10).to_bytes(1, ENDIANESS)
                     con.send(status)
-                    print('arquivo n existe!!!')   
+                    print('arquivo n existe!!!')
+            
+            elif option == 50:
+                print('oie')
+    
     #######################################################################################################################################
             elif option == 60:
                 print('programa encerrado com sucesso!!!')

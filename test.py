@@ -1,4 +1,4 @@
-var = '*dadad*dadad*dada*ddda*'
-a = var.split('*')
+var = 'dha9gfs98eufousvfo8jawf'
 
-print(a)
+for a in range(0, len(var)):
+    print(var[a])
