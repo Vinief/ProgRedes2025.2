@@ -285,11 +285,11 @@ def eval(servico,parametro):
                 SERVICES = { "gemini"   : { "model" : "gemini-2.5-flash",  # ou gemini-1.5-pro, etc.
                             "host": "generativelanguage.googleapis.com",
                             "endpoint" : "/v1beta/openai/chat/completions",
-                            "token": 'AIzaSyCMUoBP4-A5FyfKm3d-1ByzY_y-DSHOrEQ'}
+                            "token": seu token'}
                 }
 
                 headers = {
-                "Authorization": "AIzaSyCMUoBP4-A5FyfKm3d-1ByzY_y-DSHOrEQ",
+                "Authorization": "seu token",
                 "Content-Type": "application/json"
                 }
 
