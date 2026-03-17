@@ -2,7 +2,7 @@ import requests, os, time, json, funcoes_bot, threading, socket
 PORT = 45678
 ENDIANNESS  = 'big'
 CODIFICACAO = 'utf-8'
-TOKEN       = '8162411623:AAHdj4XLPjL85zI3gubAg-DTPrWimV93Kdk'
+TOKEN       = #seu token
 URL         = f'https://api.telegram.org/bot{TOKEN}'
 info        = []
 
